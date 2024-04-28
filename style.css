@@ -95,6 +95,16 @@ body{
 
 #submit-button{
   margin-bottom: 32px;
+  background-color: transparent;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: solid black 1px;
+  border-radius: 4px;
+  padding: 4px 8px;
+
 }
 
 #input-text{
@@ -104,6 +114,8 @@ body{
   max-height: 500px;
   min-height: 48px;
   margin-bottom: 24px;
+  border: solid black 1px;
+  border-radius: 4px;
 }
 
 #test-result-container{
