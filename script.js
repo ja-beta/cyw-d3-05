@@ -406,31 +406,111 @@ function processUserText(text) {
   const charCounts = countAllOccurrencesCaseInsensitive(words); 
   console.log("Character counts for user input:", charCounts);
 
-  const containerId = "kbEnglishTest"; 
+  const userCharPercentages = getCharPercentages(charCounts);
+  const similarityPercentage = calculateSimilarity(userCharPercentages, englishCharPercentages);
+  displayUserResult(similarityPercentage, charCounts);
+}
+
+// ____________________________________________________________________
+// FORM RESULT
+
+function getCharPercentages(charCounts) {
+  const totalOccurrences = Object.values(charCounts).reduce((sum, count) => sum + count, 0);
+  
+  const charPercentages = {};
+  Object.entries(charCounts).forEach(([char, count]) => {
+    charPercentages[char.toLowerCase()] = ((count / totalOccurrences) * 100).toFixed(2);
+  });
+
+  return charPercentages;
+}
+
+const userCharPercentages = getCharPercentages(countAllOccurrencesCaseInsensitive(["user", "input", "example"]));
+
+const englishCharPercentages = {
+  'a': 8.17,
+  'b': 1.49,
+  'c': 2.78,
+  'd': 4.25,
+  'e': 12.70,
+  'f': 2.23,
+  'g': 2.02,
+  'h': 6.09,
+  'i': 6.97,
+  'j': 0.15,
+  'k': 0.77,
+  'l': 4.03,
+  'm': 2.41,
+  'n': 6.75,
+  'o': 7.51,
+  'p': 1.93,
+  'q': 0.10,
+  'r': 5.99,
+  's': 6.33,
+  't': 9.06,
+  'u': 2.76,
+  'v': 0.98,
+  'w': 2.36,
+  'x': 0.15,
+  'y': 1.97,
+  'z': 0.07
+};
+
+function calculateSimilarity(userPercentages, englishPercentages) {
+  const userVector = createVector(userPercentages);
+  const englishVector = createVector(englishPercentages);
+  
+  const similarity = cosineSimilarity(userVector, englishVector); 
+  const similarityPercentage = (similarity * 100).toFixed(2); // Convert to percentage
+  return similarityPercentage;
+}
+
+function createVector(charPercentages) {
+  const referenceCharacters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
+  
+  return referenceCharacters.map(char => charPercentages[char.toLowerCase()] || 0); // Create vector from object
+}
+
+
+function cosineSimilarity(vector1, vector2) {
+  const dotProduct = vector1.reduce((sum, v1, index) => sum + (v1 * vector2[index]), 0);
+  const magnitude1 = Math.sqrt(vector1.reduce((sum, v) => sum + (v * v), 0));
+  const magnitude2 = Math.sqrt(vector2.reduce((sum, v) => sum + (v * v), 0));
+  
+  if (magnitude1 === 0 || magnitude2 === 0) {
+    return 0; // Avoid division by zero
+  }
+
+  return dotProduct / (magnitude1 * magnitude2); // Cosine similarity
+}
+
+
+
+const similarityPercentage = calculateSimilarity(userCharPercentages, englishCharPercentages);
+
+
+function displayUserResult(similarityPercentage, charCounts){
+  //keyboard
+  const kbContainer = document.getElementById("kbEnglishTest");
+  const existingKeyboard = kbContainer.querySelector(".keyboard");
+  if (existingKeyboard){
+    kbContainer.removeChild(existingKeyboard);
+  }
 
   const colorScaleUserEnglish = d3.scaleLinear()
   .domain([0, 100]) 
   .range([englishColor1, englishColor2]); // gotta be hex
+  createKeyboard("kbEnglishTest", charCounts, colorScaleUserEnglish, false, englishKbLayout);
 
-  createKeyboard(containerId, charCounts, colorScaleUserEnglish, false, englishKbLayout); 
+  //text
+  const resultContainer = document.getElementById("test-result-container");
+  const numberElement = document.getElementById("result-number");
+  numberElement.innerHTML = `${similarityPercentage}%`;
+  resultContainer.style.display = "block";
 }
 
-// function processUserText(text) {
-//   const words = text.split(/\s+/); 
-//   const charCounts = countAllOccurrencesCaseInsensitive(words); 
-//   console.log("Character counts for user input:", charCounts);
-
-//   const userCharPercentages = getCharPercentages(charCounts); // Convert to percentages
-
-//   const containerId = "kbEnglishTest"; 
-//   const colorScale = d3.scaleSqrt().domain([1, 30]).range([1, 30]); // Color scale for user keyboard
-  
-//   createKeyboard(containerId, charCounts, colorScale, false); // Create the keyboard with lowercase layout
-// }
 
 
-
-// FORM RESULT
 
 
 
