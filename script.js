@@ -69,47 +69,43 @@ function countAllOccurrencesCaseInsensitive(wordList) {
     }
   });
 
-  return charCounts; // Return the counts
+  return charCounts;
 }
 
 
 function loadDataCreateKb(dataPath, containerId, countingFunction, colorScale, considerUppercase, displayCharacters = true) {
   d3.csv(dataPath).then(data => {
-    const words = data.map(d => d.string);
+    const words = data.map(d => d[Object.keys(d)[0]]);
     const charCounts = countCharacters(words, countingFunction, considerUppercase);
     console.log(`Character counts for ${containerId}: `, charCounts);
-
     createKeyboard(containerId, charCounts, colorScale, considerUppercase, displayCharacters);
   });
 
 }
 
-
-loadDataCreateKb("assets/passwords.csv", 'kbOne', countAllOccurrences, colorScalePwAll, true);
-loadDataCreateKb("assets/passwords.csv", 'kbTwo', countFirstChar, colorScalePwFirst, false);
-
-loadDataCreateKb("assets/passwords.csv", 'no-char', countAllOccurrences, colorScalePwAll, false, false);
-
-loadDataCreateKb("assets/baby-names-1880.csv", 'kbBaby1880', countAllOccurrences, colorScalePwAll, true, true);
-
-// d3.csv("assets/baby-names-1880.csv").then(data => {
-//   console.log(data);
-// }).catch(error => {
-//   console.error("Error loading or parsing the CSV file:", error);
-// });
-
-// loadDataCreateKb("assets/baby-names-2015.csv", 'kbBaby2015', countAllOccurrences, colorScalePwAll, false, false);
-
-// loadDataCreateKb("assets/baby-names-test.csv", 'kbBaby2015', countAllOccurrences, colorScalePwAll, false, false);
-
-//heatmap
-const dataPath = "assets/brooklyn.csv";
 // d3.csv(dataPath).then((data) => {
 //   console.log("CSV data:", data); 
 // }).catch((error) => {
 //   console.error("Error loading CSV:", error); 
 // });
 
+
+loadDataCreateKb("assets/passwords.csv", 'kbOne', countAllOccurrences, colorScalePwAll, true);
+loadDataCreateKb("assets/passwords.csv", 'kbTwo', countFirstChar, colorScalePwFirst, false);
+
+loadDataCreateKb("assets/passwords.csv", 'password-blur', countAllOccurrences, colorScalePwAll, false, false);
+
+loadDataCreateKb("assets/baby-names-1880.csv", 'kbBaby1880', countAllOccurrences, colorScalePwAll, false, false);
+
+
+loadDataCreateKb("assets/baby-names-2015.csv", 'kbBaby2015', countAllOccurrences, colorScalePwAll, false, false);
+
+// loadDataCreateKb("assets/baby-names-test.csv", 'kbBaby2015', countAllOccurrences, colorScalePwAll, false, false);
+
+
+
+//heatmap
+const dataPath = "assets/brooklyn.csv";
 // createHeatmapFromData(dataPath, "heatmap-container");
 
 
@@ -170,13 +166,13 @@ function createKeyboard(containerId, charCounts, colorScale, considerUppercase, 
   kbContainer.className = 'keyboard';
   const totalOccurrences = Object.values(charCounts).reduce((a, b) => a + b, 0);
 
-  if(!displayCharacters){
-    const blurDivs = document.getElementsByClassName('blur-effect');
-    if (blurDivs.length < 1) {
-      const blurDiv = document.createElement('div');
-      blurDiv.className = 'blur-effect';
-      kbContainer.appendChild(blurDiv);
-    }
+  if (!displayCharacters) {
+    let blurDivs = document.getElementsByClassName('blur-effect');
+
+    let blurDiv = document.createElement('div');
+    blurDiv.className = 'blur-effect';
+    kbContainer.appendChild(blurDiv);
+
   }
 
   customLayout.forEach(row => {
@@ -187,41 +183,41 @@ function createKeyboard(containerId, charCounts, colorScale, considerUppercase, 
       const keyDiv = document.createElement('div');
       keyDiv.className = 'keyboard-key';
 
-        const char1Div = document.createElement('div');
-        char1Div.className = 'char1';
-        char1Div.textContent = considerUppercase ? key.char1 : key.char1.toLowerCase();
+      const char1Div = document.createElement('div');
+      char1Div.className = 'char1';
+      char1Div.textContent = considerUppercase ? key.char1 : key.char1.toLowerCase();
 
-        if(!displayCharacters){
-          char1Div.style.color = colorScale(charCounts[key.char1]);
-          char1Div.classList.add('no-char');
-          keyDiv.style.border = "none";
-          keyDiv.style.backgroundColor = "transparent";
-          keyDiv.style.borderRadius = "50%";
-          kbContainer.style.gap = "0px";
-          kbContainer.style.marginTop = "140px";
-          rowDiv.style.gap = "0px";
+      if (!displayCharacters) {
+        char1Div.style.color = colorScale(charCounts[key.char1]);
+        char1Div.classList.add('no-char');
+        keyDiv.style.border = "none";
+        keyDiv.style.backgroundColor = "transparent";
+        keyDiv.style.borderRadius = "50%";
+        kbContainer.style.gap = "0px";
+        kbContainer.style.marginTop = "140px";
+        rowDiv.style.gap = "0px";
 
+      }
+      keyDiv.appendChild(char1Div);
+
+      // Add event listeners to the lowercase key
+      addEventListeners(char1Div, charCounts, totalOccurrences);
+
+      if (considerUppercase && key.char2) {
+        const char2Div = document.createElement('div');
+        char2Div.className = 'char2';
+        char2Div.textContent = key.char2;
+
+        if (!displayCharacters) {
+          char2Div.style.color = colorScale(charCounts[key.char2.toLowerCase()]);
+          char2Div.classList.add('no-char');
         }
-        keyDiv.appendChild(char1Div);
 
-        // Add event listeners to the lowercase key
-        addEventListeners(char1Div, charCounts, totalOccurrences);
+        keyDiv.appendChild(char2Div);
 
-        if (considerUppercase && key.char2) {
-          const char2Div = document.createElement('div');
-          char2Div.className = 'char2';
-          char2Div.textContent = key.char2;
-
-          if(!displayCharacters){
-            char2Div.style.color = colorScale(charCounts[key.char2.toLowerCase()]);
-            char2Div.classList.add('no-char');
-          }
-
-          keyDiv.appendChild(char2Div);
-
-          // Add event listeners to the uppercase key
-          addEventListeners(char2Div, charCounts, totalOccurrences);
-        }
+        // Add event listeners to the uppercase key
+        addEventListeners(char2Div, charCounts, totalOccurrences);
+      }
 
 
       rowDiv.appendChild(keyDiv);
