@@ -37,11 +37,14 @@ body{
     gap: 8px;
     font-family: 'Courier New', Courier, monospace;
     font-weight: 400;
+    position: relative;
+    overflow: visible;
   }
 
   .keyboard-row {
     display: flex;
     gap: 8px;
+    position: relative;
   }
 
   .keyboard-key {
@@ -52,7 +55,25 @@ body{
     overflow: hidden;
     border: 1px solid #000000; 
     border-radius: 4px;
-    background-color: #f0f0f0; 
+  }
+
+  .no-char{
+    width: 40px;
+    height: 40px;
+    padding: 16px;
+  }
+
+  .blur-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200%;
+    backdrop-filter: blur(16px) contrast(1.5);
+    z-index: 1;
+    padding: 20px 0px;
+    margin-top:  -80px;
+    pointer-events: none;
   }
   
   .char1, .char2 {
@@ -77,6 +98,7 @@ body{
     border-radius: 4px;
     pointer-events: none;
     font-size: 13px;
+    z-index: 10;
   }
 
   #kbEnglish{
@@ -129,5 +151,11 @@ body{
   font-weight: 600;
   margin: -8px 0px;
 }
+
+#kb-heat-map svg {
+  display: flex;
+}
+
+
   
   
