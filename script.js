@@ -18,6 +18,13 @@ const colorScalePwFirst = d3.scaleSequential(d3.interpolateOrRd)
   .domain([1, 100]);
 
 
+const colorScaleFinal = d3.scaleSequential()
+  .domain([0, 100])
+  .interpolator(d3.interpolateRgbBasis(["#FFE9F6", "#FFC6D7", "#9DD1A2" ,"#4CBD8E", "#2C9C95",  "#28859A"]));
+
+  
+
+
 function countCharacters(wordList, countingFunction, considerUppercase) {
   // console.log("Word list:", wordList);
   if (!considerUppercase) {
@@ -93,19 +100,35 @@ function loadDataCreateKb(dataPath, containerId, countingFunction, colorScale, c
 loadDataCreateKb("assets/passwords.csv", 'kbOne', countAllOccurrences, colorScalePwAll, true);
 loadDataCreateKb("assets/passwords.csv", 'kbTwo', countFirstChar, colorScalePwFirst, false);
 
-loadDataCreateKb("assets/passwords.csv", 'password-blur', countAllOccurrences, colorScalePwAll, false, false);
+loadDataCreateKb("assets/passwords.csv", 'password-blur', countAllOccurrences, colorScaleFinal, false, false);
 
-loadDataCreateKb("assets/baby-names-1880.csv", 'kbBaby1880', countAllOccurrences, colorScalePwAll, false, false);
+loadDataCreateKb("assets/baby-names-1880.csv", 'kbBaby1880', countAllOccurrences, colorScaleFinal, false, false);
+
+loadDataCreateKb("assets/baby-names-1980.csv", 'kbBaby1980', countAllOccurrences, colorScaleFinal, false, false);
 
 
-loadDataCreateKb("assets/baby-names-2015.csv", 'kbBaby2015', countAllOccurrences, colorScalePwAll, false, false);
+loadDataCreateKb("assets/baby-names-2015.csv", 'kbBaby2015', countAllOccurrences, colorScaleFinal, false, false);
 
-// loadDataCreateKb("assets/baby-names-test.csv", 'kbBaby2015', countAllOccurrences, colorScalePwAll, false, false);
+loadDataCreateKb("assets/companies.csv", 'kbCompanies', countAllOccurrences, colorScaleFinal, false, false);
+
+loadDataCreateKb("assets/english-fake.csv", 'kbEngF', countAllOccurrences, colorScaleFinal, false, false);
+
+loadDataCreateKb("assets/nasdaq.csv", 'kbNasdaq', countAllOccurrences, colorScaleFinal, false, false);
+
+loadDataCreateKb("assets/USpresidents.csv", 'kbPresidents', countAllOccurrences, colorScaleFinal, false, false);
+
+loadDataCreateKb("assets/nobel.csv", 'kbNobel', countAllOccurrences, colorScaleFinal, false, false);
+
+loadDataCreateKb("assets/websites.csv", 'kbWebsites', countAllOccurrences, colorScaleFinal, false, false);
+
+loadDataCreateKb("assets/celebs.csv", 'kbCelebs', countAllOccurrences, colorScaleFinal, false, false);
+
+loadDataCreateKb("assets/charities.csv", 'kbCharities', countAllOccurrences, colorScaleFinal, false, false);
 
 
 
 //heatmap
-const dataPath = "assets/brooklyn.csv";
+// const dataPath = "assets/brooklyn.csv";
 // createHeatmapFromData(dataPath, "heatmap-container");
 
 
@@ -315,15 +338,6 @@ function getBrightness(color) {
 }
 
 
-//_____________________________________________________________
-//#region KEYBOARD WITHOUT CHARACTERS
-
-
-
-
-
-//#endregion
-
 // ---------------------------------------------------------------------------------------------
 
 //#region  English alphabet occurrence by percentage segment
@@ -355,7 +369,7 @@ function loadDataCreatePercentageKb(dataPath, containerId, colorScale) {
 
     console.log(`Character percentages for ${containerId}: `, charPercentages);
 
-    createPercentageKeyboard(containerId, charPercentages, colorScale);  // Create the keyboard
+    createPercentageKeyboard(containerId, charPercentages, colorScale);
   });
 }
 
@@ -442,7 +456,6 @@ function addEventListenersPercentage(element, charPercentages) {
 }
 
 
-// Load the keyboard with the new configuration
 loadDataCreatePercentageKb("assets/english-letter-frequency.csv", 'kbEnglish', colorScaleEnglish);
 
 //#endregion
@@ -724,8 +737,8 @@ const colorScalePwAll = d3.scaleSequential(d3.interpolateOrRd)
         return; // Skip if key or char1 is undefined
       }
 
-      const char = key.char1.toLowerCase(); // Convert to lowercase
-      const occurrence = charCounts[char] || 0; // Ensure occurrence is valid
+      const char = key.char1.toLowerCase();
+      const occurrence = charCounts[char] || 0;
 
       for (let i = 0; i < occurrence; i++) {
         points.push({ x: colIndex, y: rowIndex }); // Add points based on key positions
@@ -743,14 +756,14 @@ function displayDensityHeatmap(svg, densityData, colorScale) {
     .data(densityData)
     .enter().append("path")
     .attr("d", d3.geoPath())
-    .attr("fill", (d) => colorScale(d.value)); // Apply color based on density value
+    .attr("fill", (d) => colorScale(d.value));
 }
 
 function createKeyboardHeatmap(containerId, charCounts) {
   const svg = createDensityHeatmap(containerId, charCounts);
 
-  const { densityData, colorScale } = generateDensityData(charCounts, layout); // Get density data
-  displayDensityHeatmap(svg, densityData, colorScale); // Display the heatmap
+  const { densityData, colorScale } = generateDensityData(charCounts, layout);
+  displayDensityHeatmap(svg, densityData, colorScale);
 }
 
 
